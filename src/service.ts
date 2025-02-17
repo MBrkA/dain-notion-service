@@ -27,6 +27,8 @@ export const dainService = defineDAINService({
         clientSecret: process.env.NOTION_CLIENT_SECRET as string,
         authorizationUrl: "https://api.notion.com/v1/oauth/authorize",
         tokenUrl: "https://api.notion.com/v1/oauth/token",
+        useBasicAuth: true,
+        usePKCE: true,
         scopes: ["page:write"],
         onSuccess: async (agentId, tokens) => {
           console.log("Completed OAuth flow for agent", agentId);
