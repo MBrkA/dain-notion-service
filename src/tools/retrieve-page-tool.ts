@@ -3,11 +3,7 @@ import { z } from "zod";
 import { getTokenStore } from "../token-store";
 import { Client } from "@notionhq/client";
 
-import {
-  AlertUIBuilder,
-  CardUIBuilder,
-  OAuthUIBuilder,
-} from "@dainprotocol/utils";
+import { AlertUIBuilder, OAuthUIBuilder } from "@dainprotocol/utils";
 
 const retrievePageConfig: ToolConfig = {
   id: "retrieve-page",
@@ -17,11 +13,7 @@ const retrievePageConfig: ToolConfig = {
     pageId: z.string().describe("The ID of the page to retrieve"),
   }),
   output: z.any(),
-  handler: async (
-    { pageId },
-    agentInfo,
-    { app }
-  ) => {
+  handler: async ({ pageId }, agentInfo, { app }) => {
     const tokens = getTokenStore().getToken(agentInfo.id);
 
     // Handle authentication
@@ -33,7 +25,9 @@ const retrievePageConfig: ToolConfig = {
       const oauthUI = new OAuthUIBuilder()
         .title("Notion Authentication")
         .content("Please authenticate with Notion")
-        .logo("https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png")
+        .logo(
+          "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"
+        )
         .url(authUrl)
         .provider("notion");
 
@@ -56,24 +50,13 @@ const retrievePageConfig: ToolConfig = {
         page_size: 100,
       });
 
-      const title = page.properties.title?.title?.[0]?.plain_text || "Untitled";
-
-      const cardUI = new CardUIBuilder()
-        .title(title)
-        .content(`
-          Created: ${new Date(page.created_time).toLocaleDateString()}
-          Last Edited: ${new Date(page.last_edited_time).toLocaleDateString()}
-          URL: ${page.url}
-        `)
-        .build();
-
       return {
-        text: `Retrieved page: ${title}`,
+        text: `Retrieved page`,
         data: {
           page,
-          blocks: blocks.results
+          blocks: blocks.results,
         },
-        ui: cardUI,
+        ui: undefined,
       };
     } catch (error: any) {
       console.error("Error retrieving page:", error);
