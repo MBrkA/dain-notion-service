@@ -30,4 +30,8 @@ Required parameters:
 ## Used prompts to generate this application:
 - generate a dain application that utilizes notion api. before each tool check for oauth. create one tool: create page
  (Added https://developers.notion.com/reference/create-a-token and https://developers.notion.com/reference/post-page to mentions)
-
+- implement create page using @notionhq/client
+- add a tool: get-all-pages
+ (Added https://developers.notion.com/reference/post-search to mentions)
+- add a tool: retrieve page
+ (Added https://developers.notion.com/reference/retrieve-a-page to mentions)

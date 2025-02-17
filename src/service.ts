@@ -2,6 +2,7 @@ import { createOAuth2Tool, defineDAINService } from "@dainprotocol/service-sdk";
 import { getTokenStore } from "./token-store";
 import { createPageConfig } from "./tools/create-page-tool";
 import { getAllPagesConfig } from "./tools/get-all-pages-tool";
+import { retrievePageConfig } from "./tools/retrieve-page-tool";
 
 export const dainService = defineDAINService({
   metadata: {
@@ -18,6 +19,7 @@ export const dainService = defineDAINService({
     createOAuth2Tool("notion"),
     createPageConfig,
     getAllPagesConfig,
+    retrievePageConfig,
   ],
   oauth2: {
     baseUrl: process.env.TUNNEL_URL || "http://localhost:2022",
