@@ -37,3 +37,6 @@ Required parameters:
  (Added https://developers.notion.com/reference/retrieve-a-page to mentions)
 - add a tool: update page. "ui" of return can be undefined. example response of pages.update ```<exampleoutput>```
  (Added https://developers.notion.com/reference/patch-page to mentions)
+- add a tool: update content of a page
+- change name of update-content-tool to add-content-tool
+- add card ui to retrieve-page. this card should show blocks.results
