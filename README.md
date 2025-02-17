@@ -6,6 +6,9 @@ This DAIN service provides integration with Notion, allowing users to create and
 
 - OAuth2 authentication with Notion
 - Create new pages under existing pages
+- Retrieve pages
+- Update pages
+- Add content to pages
 - Secure token management
 - Error handling with user-friendly messages
 
@@ -20,12 +23,11 @@ This DAIN service provides integration with Notion, allowing users to create and
 
 ## Tools
 
-### Create Page Tool
-Creates a new page in Notion under a specified parent page.
-
-Required parameters:
-- \`parentPageId\`: The ID of the parent page
-- \`title\`: The title for the new page
+- create-page
+- get-all-pages
+- retrieve-page
+- update-page
+- add-content
 
 ## Used prompts to generate this application:
 - generate a dain application that utilizes notion api. before each tool check for oauth. create one tool: create page
