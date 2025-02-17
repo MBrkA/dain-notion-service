@@ -1,11 +1,11 @@
 import { ToolConfig } from "@dainprotocol/service-sdk";
 import { z } from "zod";
 import { getTokenStore } from "../token-store";
-import axios from "axios";
+import { Client } from "@notionhq/client";
 
 import {
   AlertUIBuilder,
-  CardUIBuilder,
+  CardUIBuilder, 
   OAuthUIBuilder,
 } from "@dainprotocol/utils";
 
@@ -26,10 +26,13 @@ const createPageConfig: ToolConfig = {
   input: z.object({
     parentPageId: z.string().describe("The ID of the parent page"),
     title: z.string().describe("The title of the new page"),
+    description: z.string().optional().describe("Optional description for the page"),
+    icon: z.string().optional().describe("Optional emoji icon for the page"),
+    coverUrl: z.string().optional().describe("Optional cover image URL for the page")
   }),
   output: z.any(),
   handler: async (
-    { parentPageId, title }: { parentPageId: string; title: string },
+    { parentPageId, title, description, icon, coverUrl },
     agentInfo,
     { app }
   ) => {
@@ -57,30 +60,58 @@ const createPageConfig: ToolConfig = {
     }
 
     try {
-      const response = await axios.post(
-        "https://api.notion.com/v1/pages",
-        {
-          parent: { page_id: parentPageId },
-          properties: {
-            title: {
-              title: [
-                {
-                  text: {
-                    content: title,
-                  },
+      const notion = new Client({ auth: tokens.accessToken });
+
+      const pageData: any = {
+        parent: { page_id: parentPageId },
+        properties: {
+          title: {
+            title: [
+              {
+                text: {
+                  content: title,
                 },
-              ],
-            },
+              },
+            ],
           },
         },
-        {
-          headers: {
-            Authorization: `Bearer ${tokens.accessToken}`,
-            "Notion-Version": "2022-06-28",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      };
+
+      // Add optional properties if provided
+      if (description) {
+        pageData.children = [
+          {
+            object: "block",
+            paragraph: {
+              rich_text: [
+                {
+                  text: {
+                    content: description
+                  }
+                }
+              ]
+            }
+          }
+        ];
+      }
+
+      if (icon) {
+        pageData.icon = {
+          type: "emoji",
+          emoji: icon
+        };
+      }
+
+      if (coverUrl) {
+        pageData.cover = {
+          type: "external",
+          external: {
+            url: coverUrl
+          }
+        };
+      }
+
+      const response = await notion.pages.create(pageData);
 
       const cardUI = new CardUIBuilder()
         .title("Page Created")
@@ -89,16 +120,16 @@ const createPageConfig: ToolConfig = {
 
       return {
         text: `Created Notion page: ${title}`,
-        data: response.data,
+        data: response,
         ui: cardUI,
       };
     } catch (error: any) {
-      console.error("Error creating page:", error.response?.data || error);
+      console.error("Error creating page:", error);
 
       const alertUI = new AlertUIBuilder()
         .variant("error")
         .title("Error Creating Page")
-        .message(error.response?.data?.message || "Failed to create page");
+        .message(error.message || "Failed to create page");
 
       return {
         text: "Failed to create page in Notion",
