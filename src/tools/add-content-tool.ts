@@ -5,10 +5,10 @@ import { Client } from "@notionhq/client";
 
 import { AlertUIBuilder, OAuthUIBuilder } from "@dainprotocol/utils";
 
-const updateContentConfig: ToolConfig = {
-  id: "update-content",
-  name: "Update Page Content",
-  description: "Updates the content blocks of an existing Notion page",
+const addContentConfig: ToolConfig = {
+  id: "add-content",
+  name: "Add Page Content",
+  description: "Adds content blocks to an existing Notion page",
   input: z.object({
     pageId: z.string().describe("The ID of the page to update"),
     content: z.array(z.object({
@@ -64,20 +64,20 @@ const updateContentConfig: ToolConfig = {
       });
 
       return {
-        text: `Updated content of page ${pageId}`,
+        text: `Added content to page ${pageId}`,
         data: response,
         ui: undefined
       };
     } catch (error: any) {
-      console.error("Error updating page content:", error);
+      console.error("Error adding page content:", error);
 
       const alertUI = new AlertUIBuilder()
         .variant("error")
-        .title("Error Updating Content")
-        .message(error.message || "Failed to update page content");
+        .title("Error Adding Content")
+        .message(error.message || "Failed to add page content");
 
       return {
-        text: "Failed to update page content in Notion",
+        text: "Failed to add page content in Notion",
         data: {},
         ui: alertUI.build(),
       };
@@ -85,4 +85,4 @@ const updateContentConfig: ToolConfig = {
   },
 };
 
-export { updateContentConfig };
+export { addContentConfig };

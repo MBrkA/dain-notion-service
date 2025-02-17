@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getTokenStore } from "../token-store";
 import { Client } from "@notionhq/client";
 
-import { AlertUIBuilder, OAuthUIBuilder } from "@dainprotocol/utils";
+import { AlertUIBuilder, OAuthUIBuilder, CardUIBuilder } from "@dainprotocol/utils";
 
 const retrievePageConfig: ToolConfig = {
   id: "retrieve-page",
@@ -50,13 +50,23 @@ const retrievePageConfig: ToolConfig = {
         page_size: 100,
       });
 
+      // Create card UI to display blocks
+      const cardUI = new CardUIBuilder()
+        .title("Page Content")
+        .content(blocks.results.map(block => {
+          // Extract text content from different block types
+          const blockContent = (block as any)[block.type]?.rich_text?.[0]?.text?.content || '';
+          return `${block.type}: ${blockContent}`;
+        }).join('\n\n'))
+        .build();
+
       return {
         text: `Retrieved page`,
         data: {
           page,
           blocks: blocks.results,
         },
-        ui: undefined,
+        ui: cardUI,
       };
     } catch (error: any) {
       console.error("Error retrieving page:", error);
